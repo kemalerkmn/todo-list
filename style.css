@@ -45,6 +45,7 @@ ul li.checked {
 
 /* Style the close button */
 .close {
+    color: red;
     position: absolute;
     right: 0;
     top: 0;

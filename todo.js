@@ -1,45 +1,100 @@
-var items = ['item 1', 'item 2', 'item 3', 'item 4',]
-var list = document.querySelector("#list")
-items.forEach(function(item){
-    var li = document.createElement("li");
-    var t = document.createTextNode(item);
-    li.className = 'list-group-item'
-    li.appendChild(t);
+const input = document.querySelector("#textItem");
+const addbtn = document.querySelector("#add");
+const list = document.querySelector("#list");
+const card = document.querySelectorAll(".card")[1]
+const cardOne = document.querySelectorAll(".card")[0]
+
+
+// todos.forEach(element => {
+//     let li = document.createElement("li");
+//     li.classList = "list-group-item";
+//     li.textContent = element;
+//     list.append(li);
+// });
+addbtn.addEventListener("click",addValueButton)
+
+function addValueButton(e){
+    value = input.value;
+    if(value === "")
+    showAlert("danger","Lütfen bir todo giriniz");
+    else{
+        addValue(value)
+        addStoreValue(value)
+        showAlert("success", "Todo başarılı şekilde yüklendi")
+        input.value="";
+    }
+    
+}
+
+function showAlert(type,message){
+    // <div class="alert alert-danger" role="alert">
+    //     A simple danger alert—check it out!
+    // </div>
+    let todos = getStoreData();
+    
+    info = document.createElement("div");
+    info.classList = `alert alert-${type}`
+    info.textContent = message;
+    cardOne.appendChild(info)
+    setTimeout(function () {
+        info.remove();
+    }, 2000)
+}
+
+function addValue(value){
+    li = document.createElement("li");
+    li.classList = " d-flex justify-content-between list-group-item";
+    i = document.createElement("i");
+    i.className = "fa-solid fa-circle-xmark";
+    li.textContent = value;
+    li.appendChild(i);
     list.appendChild(li);
-    var span = document.createElement("span");
-    var text = document.createTextNode("x");
-    span.className = "close";
-    span.appendChild(text);
-    li.appendChild(span)
-    span.onclick = function(){
-        var li = this.parentElement;
-        li.style.display = "none"
-    }
-})
+}
+function addStoreValue(value){
+    let todos = getStoreData();
+    todos.push(value);
+    localStorage.setItem("todos",JSON.stringify(todos))
 
-list.addEventListener("click",function(item){
-    if(item.target.tagName = "li"){
-        item.target.classList.toggle("checked");
-    }
-})
-var add = document.querySelector("#add");
-var input = document.querySelector("#txtItem");
+}
+addStoreValueUı();
+function addStoreValueUı(){
+    let todos = getStoreData();
+    Array.from(todos).forEach(element=>{
+        addValue(element)
+        console.log(element)
+    }) 
+}
+function getStoreData(){
+    let todos;
+    if(localStorage.getItem("todos")===null)
+        todos = [];
+    else
+        todos = JSON.parse(localStorage.getItem("todos"))
 
-add.addEventListener("click",function(){
-    var li = document.createElement("li");
-    li.textContent = input.value;
-    items.push(input.value)
-    console.log(items)
-    li.className = "list-group-item"
-    list.prepend(li); 
-    input.value = "";
-    var span = document.createElement("span");
-    var text = document.createTextNode("x");
-    span.appendChild(text);
-    span.classList = "close"
-    li.appendChild(span)
-    span.onclick = function(){
-        var li = this.parentElement;
-        li.style.display = "none";
+    return todos;
+}
+
+card.addEventListener("click",select)
+
+function select(e){
+    console.log(e)
+    if (e.target.className === "fa-solid fa-circle-xmark"){
+       singleDelete(e);
     }
-})
+    if(e.target.id ==="deletebtn"){
+       localStorage.clear();
+       location.reload(false)
+    }
+}
+
+function singleDelete(e){
+    todos = getStoreData();
+    todos.forEach((element,index)=>{
+        if(element == e.path[1].textContent)
+           todos.splice(index,1)
+        localStorage.setItem("todos",JSON.stringify(todos))
+        location.reload(false)
+
+    })
+
+}
